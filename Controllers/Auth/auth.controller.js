@@ -150,4 +150,48 @@ router.get('/me' , AuthRequired('User') ,  async(req , res) => {
 
 });
 
+router.get('/user-workspaces' , AuthRequired('User') , async(req , res) => {
+
+    try{
+
+        // get all workspaces of the user
+        const workspaces = await db.workspace_users.findAll({
+            where: {
+                user_id: req.user.user.id
+            }
+        });
+
+        // get the workspace details
+        let ret_array = [];
+        for(let i = 0; i < workspaces.length; i++){
+
+            const workspace_details = await db.workspaces.findOne({
+                where: {
+                    id: workspaces[i].workspace_id
+                }
+            });
+
+            ret_array.push({
+                workspace : workspaces[i],
+                workspace_details: workspace_details.dataValues,
+            });
+
+        }
+
+        console.log('the data is : ' , workspaces[0].workspace_details);
+
+        return res.status(200).json({
+            workspaces: ret_array
+        });
+
+
+    }catch(err){
+        return res.status(400).json({
+            message: err.message
+        });
+    }
+
+
+});
+
 module.exports = router;
