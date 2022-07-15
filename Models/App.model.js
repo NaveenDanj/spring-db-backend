@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Workspace = sequelize.define("workspace", {
+    const App = sequelize.define("apps", {
 
         id: {
             type: Sequelize.INTEGER,
@@ -9,26 +9,25 @@ module.exports = (sequelize, Sequelize) => {
 
         name: {
             type: Sequelize.STRING,
-            allowNull: false,
+            allowNull: false
         },
 
-        owner_id: {
+        workspace_id: {
             type: Sequelize.INTEGER,
             allowNull: false,
             references: {
-                model: 'users',
+                model: 'workspaces',
                 key: 'id',
                 onDelete: 'cascade'
             }
         },
 
-        workspace_api_key: {
+        app_api_key: {
             type: Sequelize.STRING,
             allowNull: false,
             unique: true
-        }
-        
+        },
 
     });
-    return Workspace;
+    return App;
 };

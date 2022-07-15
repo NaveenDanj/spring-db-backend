@@ -39,5 +39,5 @@ module.exports = (sequelize, Sequelize) => {
         
 
     });
-    return Workspace;
+    return WorkspaceUsers;
 };
