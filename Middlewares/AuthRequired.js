@@ -49,6 +49,18 @@ const AuthRequired = (userRole) => {
                     }
                 });
 
+                // get the user's workspace
+                const workspace = await db.workspaces.findOne({
+                    where: {
+                        owner_id: user.id
+                    }
+                });
+
+                const userObjects = {
+                    user: user,
+                    workspace: workspace
+                }
+
                 if(!user){
                     return res.status(403).json({message: 'Unauthenticated'});
                 }
@@ -57,11 +69,11 @@ const AuthRequired = (userRole) => {
                 //     return res.status(403).send({error: 'You are not authorized'})
                 // }
                 
-                req.user = user;
+                req.user = userObjects;
                 next();
 
             }catch(err){
-                return res.status(401).send({error: 'Unauthenticated'})
+                return res.status(401).send({error: 'Unauthenticateds'})
             }
 
         })

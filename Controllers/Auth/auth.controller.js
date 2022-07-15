@@ -6,7 +6,8 @@ const {
     comparePassword
 } = require('../../Services/hash.service');
 const {
-    generateToken
+    generateToken,
+    generateAppToken
 } = require('../../Services/token.service');
 const User = db.users;
 const AccessToken = db.access_token;
@@ -47,6 +48,21 @@ router.post('/register', async (req, res) => {
             fullname: val.fullname,
             password: hashedPassword
         });
+
+        // create a workspace for the user
+        const workspace = await db.workspaces.create({
+            name: user.fullname +  "'s workspace",
+            owner_id: user.id,
+            workspace_api_key : generateAppToken()
+        });
+
+        // create a workspace user for the user
+        await db.workspace_users.create({
+            user_id: user.id,
+            workspace_id: workspace.id,
+            role: "owner"
+        });
+
 
         return res.status(201).json({
             message: "User created successfully",
