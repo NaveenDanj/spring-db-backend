@@ -7,21 +7,21 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true
         },
 
-        fullname: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
-
-        email: {
+        name: {
             type: Sequelize.STRING,
             allowNull: false,
-            unique: true
         },
 
-        password: {
-            type: Sequelize.STRING,
-            allowNull : false
+        owner_id: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id',
+                onDelete: 'cascade'
+            }
         }
+        
 
     });
     return Workspace;
