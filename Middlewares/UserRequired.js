@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../Models/User');
-const AccessToken = require('../Models/AccessToken');
+const db = require("../Database");
 
 const AuthRequired = (userRole) => {
 
