@@ -8,6 +8,7 @@ const {
     generateToken
 } = require('../../Services/token.service');
 const User = db.users;
+const AccessToken = db.access_token;
 const router = express.Router();
 const Joi = require('../../Validator/index');
 
@@ -94,6 +95,12 @@ router.post('/login', async (req, res) => {
 
         // Generate token
         const token = generateToken(user.email);
+
+        // Save token to database
+        await AccessToken.create({
+            token: token,
+            user_id: user.id
+        });
 
         return res.status(200).json({
             message: "Login successful",

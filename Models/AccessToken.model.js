@@ -7,6 +7,15 @@ module.exports = (sequelize, Sequelize) => {
             autoIncrement: true
         },
 
+        user_id : {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id'
+            }
+        },
+
         token: {
             type: Sequelize.STRING,
             allowNull: false,
