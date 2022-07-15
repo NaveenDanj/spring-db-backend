@@ -4,7 +4,7 @@ module.exports = {
 
     generateToken(email){
         // expire in 30 days
-        return jwt.sign(email , process.env.JWT_SECRET , {expiresIn: '30d'});
+        return jwt.sign( {email : email} , process.env.JWT_SECRET , {expiresIn: '30d'});
     }
 
 
