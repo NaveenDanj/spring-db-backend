@@ -37,9 +37,15 @@ const AuthRequired = (userRole) => {
             if (err) return res.status(403).json({message: 'Unauthenticated'});
         
             try{
+                
+                // deselect the password from the user object
+
                 let user = await db.users.findOne({
                     where: {
                         email: userObject.email
+                    },
+                    attributes: {
+                        exclude: ['password']
                     }
                 });
 
@@ -50,7 +56,7 @@ const AuthRequired = (userRole) => {
                 // if( roleMapper[user.role] < roleMapper[userRole] ){
                 //     return res.status(403).send({error: 'You are not authorized'})
                 // }
-
+                
                 req.user = user;
                 next();
 
