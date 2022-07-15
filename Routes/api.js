@@ -6,6 +6,6 @@ router.get('/', (req, res) => {
 });
 // add middleware to jobController
 // router.use('/job' , AuthRequired('User') ,  JobController);
-
+router.use('/auth');
 
 module.exports = router;
