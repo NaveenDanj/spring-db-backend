@@ -11,7 +11,6 @@ const AuthRequired = (userRole) => {
             return res.status(401).send({error: 'Unauthenticated'});
         }
 
-        // in future check if token is in blacklist(logged out before token expired)
         try{
 
             let checkExists = await db.access_token.findOne({
@@ -38,7 +37,11 @@ const AuthRequired = (userRole) => {
             if (err) return res.status(403).json({message: 'Unauthenticated'});
         
             try{
-                let user = await User.findOne({email : userObject.email}).select('-password');
+                let user = await db.users.findOne({
+                    where: {
+                        email: userObject.email
+                    }
+                });
 
                 if(!user){
                     return res.status(403).json({message: 'Unauthenticated'});
@@ -52,7 +55,7 @@ const AuthRequired = (userRole) => {
                 next();
 
             }catch(err){
-                return res.status(401).send({error: 'Error while finding user'})
+                return res.status(401).send({error: 'Unauthenticated'})
             }
 
         })
