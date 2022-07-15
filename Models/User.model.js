@@ -20,13 +20,7 @@ module.exports = (sequelize, Sequelize) => {
 
         password: {
             type: Sequelize.STRING,
-            allowNull : false,
-            validate: {
-                length: {
-                    args: [6, 255],
-                    msg: "Password must be at least 6 characters long"
-                }
-            }
+            allowNull : false
         }
 
     });
