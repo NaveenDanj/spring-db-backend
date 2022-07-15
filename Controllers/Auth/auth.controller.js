@@ -1,7 +1,9 @@
 const express = require('express');
 const db = require("../../Database");
+const {hashPasswod , comparePassword} = require('../../Services/hash.service'); 
 const User = db.users;
 const router = express.Router();
+
 
 router.post('/', (req, res) => {
 
@@ -23,10 +25,12 @@ router.post('/', (req, res) => {
             });
         }
 
+        const hashedPassword = await hashPasswod(val.password);
+
         user = await User.create({
             email : val.email,
             fullname : val.fullname,
-            password : val.password
+            password : hashedPassword
         });
 
         res.status(201).json({
