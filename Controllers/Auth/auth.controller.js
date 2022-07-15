@@ -178,8 +178,6 @@ router.get('/user-workspaces' , AuthRequired('User') , async(req , res) => {
 
         }
 
-        console.log('the data is : ' , workspaces[0].workspace_details);
-
         return res.status(200).json({
             workspaces: ret_array
         });
