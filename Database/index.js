@@ -23,4 +23,5 @@ db.instance = require("../Models/Instance.model")(sequelize, Sequelize);
 db.backup = require("../Models/Backup.model")(sequelize, Sequelize);
 db.app = require("../Models/App.model")(sequelize, Sequelize);
 db.app_users = require("../Models/AppUser.model")(sequelize, Sequelize);
+db.error_log = require("../Models/ErrorLog.model")(sequelize, Sequelize);
 module.exports = db;
