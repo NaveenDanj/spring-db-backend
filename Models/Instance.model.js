@@ -27,6 +27,16 @@ module.exports = (sequelize, Sequelize) => {
             }
         },
 
+        owned_by: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'id',
+                onDelete: 'cascade'
+            }
+        },
+
         bandwidth : {
             type: Sequelize.INTEGER,
             allowNull: false,
