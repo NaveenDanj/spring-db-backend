@@ -150,7 +150,6 @@ router.get('/me' , AuthRequired('User') ,  async(req , res) => {
     try{
 
         return res.status(200).json({
-            message: "User found",
             user: req.user
         });
 
