@@ -174,4 +174,83 @@ router.post('/add-users-to-app' , async(req , res) => {
 
 });
 
+
+router.delete('/remove-app-users/:userId/:appId' , async (req , res) => {
+
+    // check if user id is valid
+    let user = await db.users.findOne({
+        where: {
+            id: req.params.userId
+        }
+    });
+
+    if(!user){
+        return res.status(400).json({
+            message: "User not found"
+        });
+    }
+
+    // check if app id is valid
+    let app = await db.app.findOne({
+        where: {
+            id: req.params.appId
+        }
+    });
+
+    if(!app){
+        return res.status(400).json({
+            message: "App not found"
+        });
+    }
+
+    // check if user is in the app
+    let app_user = await db.app_users.findOne({
+        where: {
+            user_id: req.params.userId,
+            app_id: req.params.appId
+        }
+    });
+
+    if(!app_user){
+        return res.status(400).json({
+            message: "User not found in the app"
+        });
+    }
+
+    // check if app is owned by the user
+    let workspace_users = await db.workspace_users.findOne({
+        where: {
+            workspace_id: app.dataValues.workspace_id,
+            user_id: req.user.user.id
+        }
+    });
+    
+    if(!workspace_users){
+        return res.status(400).json({
+            message: "You don't have access to this workspace"
+        });
+    }
+
+    if(workspace_users.dataValues.role != 'admin' && workspace_users.dataValues.role != 'owner'){
+        return res.status(400).json({
+            message: "You don't have access to this workspace"
+        });
+    }
+
+
+    // remove user from the app
+    await db.app_users.destroy({
+        where: {
+            user_id: req.params.userId,
+            app_id: req.params.appId
+        }
+    });
+
+    return res.status(200).json({
+        message: "User removed from app successfully"
+    });
+
+
+});
+
 module.exports = router;
