@@ -63,6 +63,18 @@ router.post('/register', async (req, res) => {
             role: "owner"
         });
 
+        // create a default instance for the user
+        await db.instance.create({
+            name: "FREE",
+            workspace_id: workspace.id,
+            owned_by : user.id,
+            bandwidth : 500,
+            database : 1,
+            user_account : 1,
+            disk_space : 1024,
+            backup_count : 20
+        });
+
 
         return res.status(201).json({
             message: "User created successfully",
