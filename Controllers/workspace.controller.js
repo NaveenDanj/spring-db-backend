@@ -69,6 +69,20 @@ router.post('/add-user-workspace' , async (req ,res) => {
             });
         }
 
+        // check if user is already in the workspace
+        let workspace_user = await db.workspace_users.findOne({
+            where : {
+                workspace_id : val.workspace_id,
+                user_id : user.id
+            }
+        });
+
+        if(workspace_user){
+            return res.status(400).json({
+                message : "User already in the workspace"
+            });
+        }
+
         // create user workspace
         let ret_user = await db.workspace_users.create({
             user_id : user.id,
@@ -76,13 +90,26 @@ router.post('/add-user-workspace' , async (req ,res) => {
             role : val.role
         });
 
+
         // add usert to apps
         for(let i = 0; i < val.apps.length; i++){
-                
-            let app = await db.app_users.create({
-                app_id : val.apps[i],
-                user_id : user.id
+
+            // check if user is already added to app
+            let user_app = await db.user_app.findOne({
+                where : {
+                    user_id : user.id,
+                    app_id : val.apps[i]
+                }
             });
+
+            if(!user_app){
+                
+                let app = await db.app_users.create({
+                    app_id : val.apps[i],
+                    user_id : user.id
+                });
+
+            }
     
         }
 
