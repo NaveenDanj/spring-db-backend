@@ -145,6 +145,36 @@ router.post('/login', async (req, res) => {
 
 });
 
+router.post('/logout' , AuthRequired('user') , async(req , res) => {
+
+    try{
+
+        let token = req.headers['authorization'];
+
+        // update token from database
+        await AccessToken.update({
+            blocked: true
+        } , {
+            where : {
+                token : token,
+                user_id : req.user.user.id
+            }
+        });
+
+        return res.status(200).json({
+            message : "Logout successful"
+        });
+
+    }catch(err){
+
+        return res.status(500).json({
+            message : err.message
+        });
+
+    }
+
+});
+
 router.get('/me' , AuthRequired('User') ,  async(req , res) => {
 
     try{
