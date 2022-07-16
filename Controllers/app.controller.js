@@ -4,6 +4,51 @@ const router = express.Router();
 const Joi = require('../Validator/index');
 
 
+router.get('/get-my-apps/:workspaceId' , async(req ,res) => {
+
+    try{
+
+        const app_users = await db.app_users.findAll({
+            where : {
+                user_id : req.user.user.id
+            }
+        });
+    
+        let ret_array = [];
+    
+        for(let i = 0; i < app_users.length; i++){
+    
+            const app = await db.app.findOne({
+                where : {
+                    id : app_users[i].app_id,
+                    workspace_id : req.params.workspaceId
+                }
+            });
+
+            if(app){
+                ret_array.push({
+                    app : app.dataValues,
+                    app_user : app_users[i].dataValues
+                });
+            }
+
+        }
+    
+        return res.status(200).json({
+            apps : ret_array
+        });
+    
+
+    }catch(err){
+        return res.status(400).json({
+            message: err.message
+        });
+    }
+
+    
+});
+
+
 router.post('/add' , async(req , res) =>{
 
     let validator = Joi.object({
@@ -58,6 +103,12 @@ router.post('/add' , async(req , res) =>{
             name: val.app_name,
             app_api_key : val.app_api_key,
             workspace_id : val.workspace_id
+        });
+
+        // add the owner to the app
+        await db.app_users.create({
+            user_id : req.user.user.id,
+            app_id : app.dataValues.id,
         });
 
 
@@ -250,7 +301,90 @@ router.delete('/remove-app-users/:userId/:appId' , async (req , res) => {
         message: "User removed from app successfully"
     });
 
+});
+
+router.put('/update/:appId' , async (req , res) => {
+
+    let validator = Joi.object({
+        app_name : Joi.string().required(),
+        app_api_key : Joi.string().required(),
+    });
+
+    try{
+
+        let val = await validator.validateAsync(req.body, {
+            abortEarly: false
+        });
+
+        // check if app id is valid
+        let app = await db.app.findOne({
+            where: {
+                id: req.params.appId
+            }
+        });
+
+        if(!app){
+            return res.status(400).json({
+                message: "App not found"
+            });
+        }
+
+
+        // check if app is owned by the user
+        let workspace_users = await db.workspace_users.findOne({
+            where: {
+                workspace_id: app.dataValues.workspace_id,
+                user_id: req.user.user.id
+            }
+        });
+
+        
+        if(!workspace_users){
+            return res.status(400).json({
+                message: "You don't have access to this workspace"
+            });
+        }
+
+        if(workspace_users.dataValues.role != 'admin' && workspace_users.dataValues.role != 'owner'){
+            return res.status(400).json({
+                message: "You don't have access to this workspace"
+            });
+        }
+
+        // update the app detail
+        let updated_app = await db.app.update({
+            name: val.app_name,
+            app_api_key: val.app_api_key
+        },
+        {
+            where: {
+                id: req.params.appId
+            }
+
+        });
+        
+        return res.status(200).json({
+            message: "App details updated successfully",
+            app: updated_app
+        });
+
+
+    }catch(err){
+
+        return res.status(400).json({
+            message: err.message
+        })
+
+    }
 
 });
+
+router.post('/generate-key' , (req , res) => {
+
+
+
+
+});
+
 
 module.exports = router;
